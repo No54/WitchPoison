@@ -7,7 +7,7 @@
 
 A desktop card game developed based on Vue 3 and Vite.
 
-This project is entirely coded by TRAE except for some text input. Special thanks to TRAE for their contribution.
+This project is entirely coded by [TRAE](https://www.trae.ai/) except for some text input. Special thanks to TRAE for their contribution.
 
 "WitchPoison" is inspired by a real card game. This project is only for AI programming learning and research purposes. If there are any intellectual property issues, please contact me promptly.
 
