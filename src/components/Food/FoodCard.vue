@@ -1,6 +1,6 @@
 <script setup>
 import { ref, onMounted } from 'vue';
-import { getCardBackUrl } from '../../utils/cardBackLoader.js';
+import { getCardBackComponent } from '../../utils/cardBackLoader.js';
 
 const props = defineProps({
     card: {
@@ -27,7 +27,7 @@ const props = defineProps({
 
 const emit = defineEmits(['reveal']);
 
-const cardBackUrl = ref(null);
+const cardBackComponent = ref(null);
 
 const handleClick = () => {
     // 在模态窗口中，允许点击任何卡片，不考虑阶段
@@ -38,39 +38,28 @@ const handleClick = () => {
     }
 };
 
-// 加载卡背图片
-onMounted(async () => {
-    cardBackUrl.value = await getCardBackUrl('food');
+// 加载卡背组件
+onMounted(() => {
+    cardBackComponent.value = getCardBackComponent('food');
 });
 </script>
 
 <template>
-    <div
-        class="food-card"
-        :class="{
-            revealed: card.isRevealed,
-            poison: card.isPoison,
-            disabled: !isModalContext && (currentPhase === '行动一' || currentPhase === '行动三'),
-            [card.type]: true,
-            shuffling: isShuffling,
-        }"
-        @click="handleClick"
-    >
-        <div
-            v-if="!card.isRevealed"
-            class="card-back"
-            :style="
-                cardBackUrl && !isDebugMode
-                    ? {
-                          backgroundImage: `url(${cardBackUrl})`,
-                          backgroundSize: 'cover',
-                          backgroundPosition: 'center',
-                          backgroundRepeat: 'no-repeat',
-                      }
-                    : {}
-            "
-        >
-            <div class="card-back-text" v-if="!cardBackUrl && !isDebugMode">食物牌</div>
+    <div class="food-card" :class="{
+        revealed: card.isRevealed,
+        poison: card.isPoison,
+        disabled: !isModalContext && (currentPhase === '行动一' || currentPhase === '行动三'),
+        [card.type]: true,
+        shuffling: isShuffling,
+    }" @click="handleClick">
+        <div v-if="!card.isRevealed" class="card-back">
+            <!-- 使用动态组件渲染卡背 -->
+            <component v-if="cardBackComponent && !isDebugMode" :is="cardBackComponent"
+                style="width: 100%; height: 100%;" />
+            <!-- 兼容旧的图片URL方式 -->
+            <div v-else-if="!isDebugMode" class="card-back-placeholder">
+                <div class="card-back-text">食物牌</div>
+            </div>
             <div class="debug-card-content" v-if="isDebugMode">
                 <div v-if="card.isPoison" class="poison-text">女巫的毒药</div>
                 <div v-else class="food-info">
@@ -115,15 +104,19 @@ onMounted(async () => {
     0% {
         transform: translateY(0) rotate(0deg);
     }
+
     25% {
         transform: translateY(-20px) rotate(15deg);
     }
+
     50% {
         transform: translateY(20px) rotate(-15deg);
     }
+
     75% {
         transform: translateY(-10px) rotate(7deg);
     }
+
     100% {
         transform: translateY(0) rotate(0deg);
     }
@@ -256,5 +249,20 @@ onMounted(async () => {
     overflow-wrap: break-word;
     line-height: 1.1;
     width: 100%;
+}
+
+.card-back-placeholder {
+    width: 100%;
+    height: 100%;
+    background-color: #8b0000;
+    color: white;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    border-radius: 8px;
+    padding: 8px;
+    text-align: center;
+    box-sizing: border-box;
 }
 </style>
