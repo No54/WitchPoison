@@ -1,6 +1,7 @@
 <script setup>
 import { ref } from 'vue';
 import GameBoard from './components/GameBoard.vue';
+import GameInstructionsModal from './utils/GameInstructionsModal.vue';
 
 // 调试模式状态
 const isDebugMode = ref(false);
@@ -22,6 +23,19 @@ const openToolCardOrderModal = () => {
 const closeToolCardOrderModal = () => {
     showToolCardOrderModal.value = false;
 };
+
+// 游戏说明模态窗口状态
+const showGameInstructionsModal = ref(false);
+
+// 打开游戏说明模态窗口
+const openGameInstructionsModal = () => {
+    showGameInstructionsModal.value = true;
+};
+
+// 关闭游戏说明模态窗口
+const closeGameInstructionsModal = () => {
+    showGameInstructionsModal.value = false;
+};
 </script>
 
 <template>
@@ -39,6 +53,7 @@ const closeToolCardOrderModal = () => {
                 >
                     {{ isDebugMode ? '调试模式' : '正常模式' }}
                 </button>
+                <button @click="openGameInstructionsModal" class="debug-btn normal">游戏说明</button>
             </div>
         </div>
         <GameBoard
@@ -52,6 +67,12 @@ const closeToolCardOrderModal = () => {
                     /* 更新逻辑在GameBoard中已经处理 */
                 }
             "
+        />
+
+        <!-- 游戏说明模态窗口 -->
+        <GameInstructionsModal 
+            :visible="showGameInstructionsModal"
+            @close="closeGameInstructionsModal"
         />
     </div>
 </template>
@@ -119,4 +140,6 @@ const closeToolCardOrderModal = () => {
     transform: scale(1.05);
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
 }
+
+
 </style>
