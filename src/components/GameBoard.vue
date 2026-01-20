@@ -177,7 +177,9 @@ const { currentPunishment, showPunishmentModal, revealFoodCard, handlePunishment
         strengthPotionTarget,
         strengthPotionUser,
         isDebugMode,
-        drawToolCard
+        drawToolCard,
+        gameState,
+        gameOverReason
     );
 
 // 初始化道具牌效果处理

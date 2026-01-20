@@ -21,7 +21,9 @@ export function useFoodEffects(
     strengthPotionTarget,
     strengthPotionUser,
     isDebugMode = { value: false },
-    drawToolCard
+    drawToolCard,
+    gameState,
+    gameOverReason
 ) {
     // 当前展示的惩罚牌
     const currentPunishment = ref(null);
@@ -105,11 +107,21 @@ export function useFoodEffects(
                             'player'
                         );
 
-                        // 抽一张惩罚牌
-                        const randomIndex = Math.floor(Math.random() * punishmentCards.length);
-                        currentPunishment.value = punishmentCards[randomIndex];
-                        showPunishmentModal.value = true;
-                        // 不调用nextPhase()，等待惩罚模态框关闭后再处理
+                        // 检查游戏是否结束
+                        const gameOverResult = checkGameOver();
+                        if (gameOverResult.isOver) {
+                            // 游戏结束，更新游戏状态
+                            if (gameState && gameOverReason) {
+                                gameState.value = 'gameOver';
+                                gameOverReason.value = gameOverResult.reason;
+                            }
+                        } else {
+                            // 游戏未结束，抽一张惩罚牌
+                            const randomIndex = Math.floor(Math.random() * punishmentCards.length);
+                            currentPunishment.value = punishmentCards[randomIndex];
+                            showPunishmentModal.value = true;
+                            // 不调用nextPhase()，等待惩罚模态框关闭后再处理
+                        }
                     }
                 }
             } else {
@@ -153,6 +165,7 @@ export function useFoodEffects(
                             `${currentPlayer.name}使用了放大镜，需要查看一张食物牌`,
                             'player'
                         );
+
                         // 不调用nextPhase()，等待玩家选择完卡片后再继续
                         return;
                         break;
@@ -305,11 +318,21 @@ export function useFoodEffects(
                             'player'
                         );
 
-                        // 抽一张惩罚牌
-                        const randomIndex = Math.floor(Math.random() * punishmentCards.length);
-                        currentPunishment.value = punishmentCards[randomIndex];
-                        showPunishmentModal.value = true;
-                        // 不调用nextPhase()，等待惩罚模态框关闭后再处理
+                        // 检查游戏是否结束
+                        const gameOverResult = checkGameOver();
+                        if (gameOverResult.isOver) {
+                            // 游戏结束，更新游戏状态
+                            if (gameState && gameOverReason) {
+                                gameState.value = 'gameOver';
+                                gameOverReason.value = gameOverResult.reason;
+                            }
+                        } else {
+                            // 游戏未结束，抽一张惩罚牌
+                            const randomIndex = Math.floor(Math.random() * punishmentCards.length);
+                            currentPunishment.value = punishmentCards[randomIndex];
+                            showPunishmentModal.value = true;
+                            // 不调用nextPhase()，等待惩罚模态框关闭后再处理
+                        }
                     }
                 }
             } else {
@@ -429,9 +452,16 @@ export function useFoodEffects(
         showPunishmentModal.value = false;
         // 惩罚结束后检查游戏是否结束
         const gameOverResult = checkGameOver();
-        // 游戏结束状态由上层组件处理，这里不直接修改游戏状态
-        // 当玩家出局后，直接切换到下一个玩家
-        nextPlayer();
+        if (gameOverResult.isOver) {
+            // 游戏结束，更新游戏状态
+            if (gameState && gameOverReason) {
+                gameState.value = 'gameOver';
+                gameOverReason.value = gameOverResult.reason;
+            }
+        } else {
+            // 游戏未结束，切换到下一个玩家
+            nextPlayer();
+        }
     };
 
     return {
