@@ -152,6 +152,14 @@ export function useGameFlow(
 
     // 进入下一个行动阶段
     const nextPhase = () => {
+        // 检查游戏是否结束
+        const gameOverResult = checkGameOver();
+        if (gameOverResult.isOver) {
+            // 游戏已经结束，不再执行后续的阶段切换逻辑
+            console.log('游戏已结束，跳过阶段切换');
+            return;
+        }
+
         const currentPlayer = players.value[currentPlayerIndex.value];
 
         if (currentPhase.value === '行动一') {
@@ -186,6 +194,14 @@ export function useGameFlow(
 
     // 切换到下一个玩家
     const nextPlayer = () => {
+        // 检查游戏是否结束
+        const gameOverResult = checkGameOver();
+        if (gameOverResult.isOver) {
+            // 游戏已经结束，不再执行后续的玩家切换逻辑
+            console.log('游戏已结束，跳过玩家切换');
+            return;
+        }
+
         const previousIndex = currentPlayerIndex.value;
 
         do {
