@@ -6,7 +6,7 @@ import IdentitySelectionView from './Identity/IdentitySelectionView.vue';
 import GamePlayView from './ViewPlay/GamePlayView.vue';
 import PunishmentModal from './Punishment/PunishmentModal.vue';
 import PrivacyMask from '../utils/PrivacyMask.vue';
-import { getCardBackUrl } from '../utils/cardBackLoader.js';
+import { getCardBackComponent } from '../utils/cardBackLoader.js';
 import { identityDescriptions } from './Identity/identityCards.js';
 import { toolCards } from './Items/toolCards.js';
 import { useGameState } from './GameStateManager.js';
@@ -24,8 +24,8 @@ import ShapeShiftModal from '../utils/ShapeShiftModal.vue';
 // 导入力量药剂模态窗口组件
 import StrengthPotionModal from '../utils/StrengthPotionModal.vue';
 
-// 卡背图片URL
-const cardBackUrl = ref(null);
+// 卡背组件
+const cardBackComponent = ref(null);
 
 // 食物查看模态窗口相关状态
 const showFoodViewModal = ref(false);
@@ -112,10 +112,9 @@ watch(
     { deep: true }
 );
 
-// 加载卡背图片
-const loadCardBack = async () => {
-    const url = await getCardBackUrl('identity');
-    cardBackUrl.value = url;
+// 加载卡背组件
+const loadCardBack = () => {
+    cardBackComponent.value = getCardBackComponent('identity');
 };
 
 // 初始化游戏流程控制
@@ -487,16 +486,16 @@ const handleStrengthPotionSelectCard = (index) => {
     }
 };
 
-onMounted(async () => {
-    await loadCardBack();
+onMounted(() => {
+    loadCardBack();
     // 初始化玩家数量为2人
     changePlayerCount(2);
 });
 
-// 监听游戏状态变化，确保卡背图片在身份选择阶段也能加载
-watch(gameState, async (newState) => {
-    if (newState === 'identitySelection' && !cardBackUrl.value) {
-        await loadCardBack();
+// 监听游戏状态变化，确保卡背组件在身份选择阶段也能加载
+watch(gameState, (newState) => {
+    if (newState === 'identitySelection' && !cardBackComponent.value) {
+        loadCardBack();
     }
 });
 
@@ -513,124 +512,64 @@ watch(
     { immediate: true }
 );
 
-// 监听cardBackUrl变化
-watch(cardBackUrl, (newValue) => {});
+// 监听cardBackComponent变化
+watch(cardBackComponent, (newValue) => { });
 
 // 移除了updateGameInfo事件监听，不再向父组件发送游戏信息
 </script>
 
 <template>
     <!-- 游戏状态显示 -->
-    <GameStatusBar
-        :gameState="gameState"
-        :round="round"
-        :currentPlayerName="players[currentPlayerIndex]?.name || ''"
-        :currentPhase="currentPhase"
-    />
+    <GameStatusBar :gameState="gameState" :round="round" :currentPlayerName="players[currentPlayerIndex]?.name || ''"
+        :currentPhase="currentPhase" />
 
     <!-- 身份抽取界面 -->
-    <IdentitySelectionView
-        v-if="gameState === 'identitySelection'"
-        :players="players"
-        :playerCount="playerCount"
-        :currentDrawerIndex="currentDrawerIndex"
-        :availableIdentities="availableIdentities"
-        :cardBackUrl="cardBackUrl"
-        :identityDescriptions="identityDescriptions"
-        :is-debug-mode="isDebugMode"
-        @changePlayerCount="changePlayerCount"
-        @toggleEditName="toggleEditName"
-        @savePlayerName="savePlayerName"
-        @drawIdentity="drawIdentity"
-        @startGame="startGame"
-    />
+    <IdentitySelectionView v-if="gameState === 'identitySelection'" :players="players" :playerCount="playerCount"
+        :currentDrawerIndex="currentDrawerIndex" :availableIdentities="availableIdentities"
+        :cardBackComponent="cardBackComponent" :identityDescriptions="identityDescriptions" :is-debug-mode="isDebugMode"
+        @changePlayerCount="changePlayerCount" @toggleEditName="toggleEditName" @savePlayerName="savePlayerName"
+        @drawIdentity="drawIdentity" @startGame="startGame" />
 
     <!-- 游戏主界面 -->
-    <GamePlayView
-        v-if="gameState === 'playing'"
-        :players="players"
-        :currentPlayerIndex="currentPlayerIndex"
-        :foodCards="foodCards"
-        :currentPhase="currentPhase"
-        :gamePhase="gameState"
-        :isMagnifierSelectionPhase="isMagnifierSelectionPhase"
-        :isSwapSelectionPhase="isSwapSelectionPhase"
+    <GamePlayView v-if="gameState === 'playing'" :players="players" :currentPlayerIndex="currentPlayerIndex"
+        :foodCards="foodCards" :currentPhase="currentPhase" :gamePhase="gameState"
+        :isMagnifierSelectionPhase="isMagnifierSelectionPhase" :isSwapSelectionPhase="isSwapSelectionPhase"
         :isStrengthPotionTargetSelection="isStrengthPotionTargetSelection"
         :isStrengthPotionCardSelection="isStrengthPotionCardSelection"
-        :isGoodLuckDewSelectionPhase="isGoodLuckDewSelectionPhase"
-        :goodLuckDewOptions="goodLuckDewOptions"
-        :is-debug-mode="isDebugMode"
-        :isShuffling="isShuffling"
-        @skipPhase="skipPhase"
-        @buyToolCard="buyToolCard"
-        @useTool="useTool"
-        @useToolCard="handleUseToolCard"
-        @revealFoodCard="revealFoodCard"
-        @useAbility="handleUseAbility"
-        @selectMagnifierCard="handleMagnifierCardSelect"
-        @selectSwapCard="handleSwapCardSelect"
-        @selectStrengthPotionTarget="handleStrengthPotionTargetSelect"
-        @selectStrengthPotionCard="handleStrengthPotionCardSelect"
-        @selectGoodLuckDewOption="handleGoodLuckDewSelect"
-        :logs="logs"
-    />
+        :isGoodLuckDewSelectionPhase="isGoodLuckDewSelectionPhase" :goodLuckDewOptions="goodLuckDewOptions"
+        :is-debug-mode="isDebugMode" :isShuffling="isShuffling" @skipPhase="skipPhase" @buyToolCard="buyToolCard"
+        @useTool="useTool" @useToolCard="handleUseToolCard" @revealFoodCard="revealFoodCard"
+        @useAbility="handleUseAbility" @selectMagnifierCard="handleMagnifierCardSelect"
+        @selectSwapCard="handleSwapCardSelect" @selectStrengthPotionTarget="handleStrengthPotionTargetSelect"
+        @selectStrengthPotionCard="handleStrengthPotionCardSelect" @selectGoodLuckDewOption="handleGoodLuckDewSelect"
+        :logs="logs" />
 
     <!-- 游戏结束显示 - 使用Modal窗口 -->
-    <GameOverModal
-        :show="gameState === 'gameOver'"
-        :players="players"
-        :game-over-reason="gameOverReason"
-        @close="gameState = 'identitySelection'"
-    />
+    <GameOverModal :show="gameState === 'gameOver'" :players="players" :game-over-reason="gameOverReason"
+        @close="gameState = 'identitySelection'" />
 
     <!-- 惩罚牌显示模态框 -->
-    <PunishmentModal
-        :show="showPunishmentModal"
-        :punishment="currentPunishment"
-        :playerName="players[currentPlayerIndex]?.name || ''"
-        @close="handlePunishmentClose"
-    />
+    <PunishmentModal :show="showPunishmentModal" :punishment="currentPunishment"
+        :playerName="players[currentPlayerIndex]?.name || ''" @close="handlePunishmentClose" />
 
     <!-- 隐私操作蒙版 - 用于放大镜、移形换影、洗牌等功能 -->
-    <PrivacyMask
-        :show="showPrivacyMask"
-        :title="privacyMaskTitle"
-        :message="privacyMaskMessage"
-        @close="handlePrivacyMaskClose"
-    />
+    <PrivacyMask :show="showPrivacyMask" :title="privacyMaskTitle" :message="privacyMaskMessage"
+        @close="handlePrivacyMaskClose" />
 
     <!-- 食物查看模态窗口 - 用于魔术师、窥视和放大镜效果 -->
-    <FoodViewModal
-        :show="showFoodViewModal"
-        :title="foodViewModalTitle"
-        :message="foodViewModalMessage"
-        :food-cards="foodCards"
-        :max-view-count="foodViewModalMaxViewCount"
-        :is-debug-mode="isDebugMode"
-        @close="handleFoodViewModalClose"
-    />
+    <FoodViewModal :show="showFoodViewModal" :title="foodViewModalTitle" :message="foodViewModalMessage"
+        :food-cards="foodCards" :max-view-count="foodViewModalMaxViewCount" :is-debug-mode="isDebugMode"
+        @close="handleFoodViewModalClose" />
 
     <!-- 移形换影模态窗口 - 用于移形换影效果 -->
-    <ShapeShiftModal
-        :show="showShapeShiftModal"
-        :title="shapeShiftModalTitle"
-        :message="shapeShiftModalMessage"
-        :food-cards="foodCards"
-        :is-debug-mode="isDebugMode"
-        @close="handleShapeShiftModalClose"
-        @swap-cards="handleShapeShiftSwapCards"
-    />
+    <ShapeShiftModal :show="showShapeShiftModal" :title="shapeShiftModalTitle" :message="shapeShiftModalMessage"
+        :food-cards="foodCards" :is-debug-mode="isDebugMode" @close="handleShapeShiftModalClose"
+        @swap-cards="handleShapeShiftSwapCards" />
 
     <!-- 力量药剂模态窗口 - 用于力量药剂效果 -->
-    <StrengthPotionModal
-        :show="showStrengthPotionModal"
-        :title="strengthPotionModalTitle"
-        :message="strengthPotionModalMessage"
-        :food-cards="foodCards"
-        :is-debug-mode="isDebugMode"
-        @close="handleStrengthPotionModalClose"
-        @select-card="handleStrengthPotionSelectCard"
-    />
+    <StrengthPotionModal :show="showStrengthPotionModal" :title="strengthPotionModalTitle"
+        :message="strengthPotionModalMessage" :food-cards="foodCards" :is-debug-mode="isDebugMode"
+        @close="handleStrengthPotionModalClose" @select-card="handleStrengthPotionSelectCard" />
 
     <!-- 倒计时显示 - 可用于多种需要倒计时的场景 -->
     <!-- 放大镜效果已迁移到统一的食物查看模态窗口，不再需要倒计时 -->
@@ -639,12 +578,8 @@ watch(cardBackUrl, (newValue) => {});
     </div>
 
     <!-- 调试模式：调整道具牌顺序模态窗口 -->
-    <ToolCardOrderModal
-        :show="props.showToolCardOrderModal"
-        :toolCards="debugToolCards"
-        @close="closeToolCardOrderModal"
-        @update:toolCards="updateToolCards"
-    />
+    <ToolCardOrderModal :show="props.showToolCardOrderModal" :toolCards="debugToolCards"
+        @close="closeToolCardOrderModal" @update:toolCards="updateToolCards" />
 </template>
 
 <style scoped></style>

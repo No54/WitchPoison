@@ -1,7 +1,7 @@
 <script setup>
 import { ref, computed, onMounted } from 'vue';
 import Tooltip from '../../utils/Tooltip.vue';
-import { getCardBackUrl } from '../../utils/cardBackLoader.js';
+import { getCardBackComponent } from '../../utils/cardBackLoader.js';
 import { identityDescriptions } from './identityCards.js';
 
 const props = defineProps({
@@ -28,42 +28,32 @@ const props = defineProps({
 });
 
 const showTooltip = ref(false);
-const cardBackUrl = ref(null);
+const cardBackComponent = ref(null);
 
 // 身份牌描述
 const identityDescription = computed(() => {
     return identityDescriptions[props.identity] || '';
 });
 
-// 加载卡背图片
-onMounted(async () => {
-    cardBackUrl.value = await getCardBackUrl('identity');
+// 加载卡背组件
+onMounted(() => {
+    cardBackComponent.value = getCardBackComponent('identity');
 });
 </script>
 
 <template>
     <div class="identity-card-wrapper">
-        <div
-            class="identity-card"
-            :class="{ revealed: isRevealed }"
-            :style="{ width: `${width}px`, height: `${height}px` }"
-            @mouseenter="showTooltip = true"
-            @mouseleave="showTooltip = false"
-        >
-            <div
-                v-if="!isRevealed"
-                class="card-back"
-                :style="
-                    cardBackUrl && !isDebugMode
-                        ? {
-                              backgroundImage: `url(${cardBackUrl})`,
-                              backgroundSize: 'cover',
-                              backgroundPosition: 'center',
-                          }
-                        : {}
-                "
-            >
-                <div class="card-back-text" v-if="!cardBackUrl && !isDebugMode">身份牌</div>
+        <div class="identity-card" :class="{ revealed: isRevealed }"
+            :style="{ width: `${width}px`, height: `${height}px` }" @mouseenter="showTooltip = true"
+            @mouseleave="showTooltip = false">
+            <div v-if="!isRevealed" class="card-back">
+                <!-- 使用动态组件渲染卡背 -->
+                <component v-if="cardBackComponent && !isDebugMode" :is="cardBackComponent"
+                    style="width: 100%; height: 100%;" />
+                <!-- 兼容旧的图片URL方式 -->
+                <div v-else-if="!isDebugMode" class="card-back-placeholder">
+                    <div class="card-back-text">身份牌</div>
+                </div>
                 <div v-if="isDebugMode" class="card-front">
                     <div class="identity-name">{{ identity }}</div>
                 </div>
@@ -74,10 +64,7 @@ onMounted(async () => {
             </div>
         </div>
         <!-- 使用Tooltip组件，仅在debug模式下显示 -->
-        <Tooltip
-            :message="identityDescription"
-            :show="!isRevealed && showTooltip && isDebugMode"
-        />
+        <Tooltip :message="identityDescription" :show="!isRevealed && showTooltip && isDebugMode" />
     </div>
 </template>
 
@@ -169,5 +156,20 @@ onMounted(async () => {
     font-size: 0.9em;
     line-height: 1.4;
     color: #666;
+}
+
+.card-back-placeholder {
+    width: 100%;
+    height: 100%;
+    background-color: #4a4a4a;
+    color: white;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    border-radius: 8px;
+    padding: 15px;
+    text-align: center;
+    box-sizing: border-box;
 }
 </style>

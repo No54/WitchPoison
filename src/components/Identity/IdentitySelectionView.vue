@@ -26,6 +26,10 @@ const props = defineProps({
         type: String,
         default: null,
     },
+    cardBackComponent: {
+        type: Object,
+        default: null,
+    },
     identityDescriptions: {
         type: Object,
         default: () => {},
@@ -178,20 +182,26 @@ const startGame = () => {
                 >
                     <div class="identity-card">
                         <div class="card-content">
-                            <div
-                                class="card-back"
-                                :style="
-                                    cardBackUrl && !isDebugMode
-                                        ? {
-                                              backgroundImage: `url(${cardBackUrl})`,
-                                              backgroundSize: '100% 100%',
-                                              backgroundPosition: 'center',
-                                              backgroundRepeat: 'no-repeat',
-                                          }
-                                        : {}
-                                "
-                            >
-                                <span class="card-back-text" v-if="!cardBackUrl && !isDebugMode">
+                            <div class="card-back">
+                                <!-- 使用动态组件渲染卡背 -->
+                                <component 
+                                    v-if="cardBackComponent && !isDebugMode"
+                                    :is="cardBackComponent"
+                                    style="width: 100%; height: 100%;"
+                                />
+                                <!-- 兼容旧的图片URL方式 -->
+                                <div 
+                                    v-else-if="cardBackUrl && !isDebugMode"
+                                    :style="{
+                                        backgroundImage: `url(${cardBackUrl})`,
+                                        backgroundSize: '100% 100%',
+                                        backgroundPosition: 'center',
+                                        backgroundRepeat: 'no-repeat',
+                                        width: '100%',
+                                        height: '100%'
+                                    }"
+                                />
+                                <span class="card-back-text" v-else-if="!isDebugMode">
                                     身份牌
                                 </span>
                                 <div v-if="isDebugMode" class="card-front">
