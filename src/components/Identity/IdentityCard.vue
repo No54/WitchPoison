@@ -1,5 +1,5 @@
 <script setup>
-import { ref, computed, onMounted } from 'vue';
+import { ref, computed, onMounted, shallowRef } from 'vue';
 import Tooltip from '../../utils/Tooltip.vue';
 import { getCardBackComponent } from '../../utils/cardBackLoader.js';
 import { identityDescriptions } from './identityCards.js';
@@ -28,7 +28,7 @@ const props = defineProps({
 });
 
 const showTooltip = ref(false);
-const cardBackComponent = ref(null);
+const cardBackComponent = shallowRef(null);
 
 // 身份牌描述
 const identityDescription = computed(() => {

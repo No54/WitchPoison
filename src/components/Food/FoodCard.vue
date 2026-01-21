@@ -1,5 +1,5 @@
 <script setup>
-import { ref, onMounted } from 'vue';
+import { ref, onMounted, shallowRef } from 'vue';
 import { getCardBackComponent } from '../../utils/cardBackLoader.js';
 
 const props = defineProps({
@@ -27,7 +27,7 @@ const props = defineProps({
 
 const emit = defineEmits(['reveal']);
 
-const cardBackComponent = ref(null);
+const cardBackComponent = shallowRef(null);
 
 const handleClick = () => {
     // 在模态窗口中，允许点击任何卡片，不考虑阶段

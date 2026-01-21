@@ -1,5 +1,5 @@
 <script setup>
-import { ref, onMounted, watch } from 'vue';
+import { ref, onMounted, watch, shallowRef } from 'vue';
 import GameOverModal from '../utils/GameOverModal.vue';
 import GameStatusBar from '../utils/GameStatusBar.vue';
 import IdentitySelectionView from './Identity/IdentitySelectionView.vue';
@@ -25,7 +25,7 @@ import ShapeShiftModal from '../utils/ShapeShiftModal.vue';
 import StrengthPotionModal from '../utils/StrengthPotionModal.vue';
 
 // 卡背组件
-const cardBackComponent = ref(null);
+const cardBackComponent = shallowRef(null);
 
 // 食物查看模态窗口相关状态
 const showFoodViewModal = ref(false);
