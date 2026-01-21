@@ -258,12 +258,12 @@ export function useGameFlow(
             };
         }
 
-        // 检查是否所有食物牌都被翻开了
-        const allCardsRevealed = foodCards.value.every((card) => card.isRevealed);
-        if (allCardsRevealed) {
+        // 检查是否所有非毒药牌都被翻开了
+        const allNonPoisonCardsRevealed = foodCards.value.every((card) => card.isPoison || card.isRevealed);
+        if (allNonPoisonCardsRevealed) {
             return {
                 isOver: true,
-                reason: '所有食物牌已被翻开，游戏结束！根据积分排名决定胜负。',
+                reason: '所有非毒药牌已被翻开，游戏结束！根据积分排名决定胜负。',
             };
         }
 
