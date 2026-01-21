@@ -235,7 +235,16 @@ export function useFoodEffects(
 
         // 检查游戏是否结束
         const gameOverResult = checkGameOver();
-        // 游戏结束状态由上层组件处理，这里不直接修改游戏状态
+        console.log('游戏结束检查结果:', gameOverResult);
+        // 更新游戏结束状态
+        if (gameOverResult.isOver) {
+            // 游戏结束，更新游戏状态
+            if (gameState && gameOverReason) {
+                gameState.value = 'gameOver';
+                gameOverReason.value = gameOverResult.reason;
+                console.log('游戏已结束，原因:', gameOverResult.reason);
+            }
+        }
     };
 
     // 处理力量药剂食物牌选择

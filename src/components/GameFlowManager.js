@@ -241,8 +241,13 @@ export function useGameFlow(
 
     // 检查游戏是否结束
     const checkGameOver = () => {
+        console.log('=== 检查游戏结束条件 ===');
+        
         const activePlayers = players.value.filter((player) => player.status === 'active');
+        console.log('活跃玩家数量:', activePlayers.length);
+        
         if (activePlayers.length === 1) {
+            console.log('游戏结束原因: 只剩一名活跃玩家');
             return {
                 isOver: true,
                 reason: `${activePlayers[0].name} 获胜，其他玩家已全部出局！`,
@@ -251,7 +256,11 @@ export function useGameFlow(
 
         // 检查是否只剩毒药牌
         const unrevealedCards = foodCards.value.filter((card) => !card.isRevealed);
+        console.log('未翻开的牌数量:', unrevealedCards.length);
+        console.log('未翻开的牌是否都是毒药:', unrevealedCards.length > 0 && unrevealedCards.every((card) => card.isPoison));
+        
         if (unrevealedCards.length > 0 && unrevealedCards.every((card) => card.isPoison)) {
+            console.log('游戏结束原因: 桌面上只剩毒药牌');
             return {
                 isOver: true,
                 reason: '桌面上只剩毒药牌，游戏结束！根据积分排名决定胜负。',
@@ -260,13 +269,17 @@ export function useGameFlow(
 
         // 检查是否所有非毒药牌都被翻开了
         const allNonPoisonCardsRevealed = foodCards.value.every((card) => card.isPoison || card.isRevealed);
+        console.log('所有非毒药牌是否都被翻开:', allNonPoisonCardsRevealed);
+        
         if (allNonPoisonCardsRevealed) {
+            console.log('游戏结束原因: 所有非毒药牌已被翻开');
             return {
                 isOver: true,
                 reason: '所有非毒药牌已被翻开，游戏结束！根据积分排名决定胜负。',
             };
         }
 
+        console.log('游戏继续，未满足结束条件');
         return { isOver: false };
     };
 
