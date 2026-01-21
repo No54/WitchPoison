@@ -71,6 +71,20 @@ pnpm run preview
 
 4. **Game End**: When a player draws a poison card, they are eliminated. The game ends when only one player remains or all poison cards are used up. If only poison cards remain, the player with the highest points wins. During settlement, tool cards count as 4 points each.
 
+## Game Screenshots
+
+### Identity Selection
+
+![Identity Selection](README/p1选择角色.png)
+
+### Game Progress
+
+![Game Progress](README/p2游戏进行.png)
+
+### Game End
+
+![Game End](README/p3游戏结束.png)
+
 ### Identity Types
 
 - **Scholar**: At the beginning of the game, gain 5 points instead of 3
