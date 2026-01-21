@@ -259,6 +259,9 @@ export function useGameFlow(
         console.log('未翻开的牌数量:', unrevealedCards.length);
         console.log('未翻开的牌是否都是毒药:', unrevealedCards.length > 0 && unrevealedCards.every((card) => card.isPoison));
         
+        // 输出未翻开牌的详细信息
+        console.log('未翻开牌详情:', unrevealedCards.map(card => ({ name: card.name, isPoison: card.isPoison })));
+        
         if (unrevealedCards.length > 0 && unrevealedCards.every((card) => card.isPoison)) {
             console.log('游戏结束原因: 桌面上只剩毒药牌');
             return {
@@ -270,6 +273,9 @@ export function useGameFlow(
         // 检查是否所有非毒药牌都被翻开了
         const allNonPoisonCardsRevealed = foodCards.value.every((card) => card.isPoison || card.isRevealed);
         console.log('所有非毒药牌是否都被翻开:', allNonPoisonCardsRevealed);
+        
+        // 输出所有牌的详细信息
+        console.log('所有牌详情:', foodCards.value.map(card => ({ name: card.name, isPoison: card.isPoison, isRevealed: card.isRevealed })));
         
         if (allNonPoisonCardsRevealed) {
             console.log('游戏结束原因: 所有非毒药牌已被翻开');

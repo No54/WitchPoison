@@ -341,8 +341,16 @@ const savePlayerName = (player) => {
 // 处理食物查看模态窗口关闭
 const handleFoodViewModalClose = () => {
     showFoodViewModal.value = false;
-    // 继续游戏流程
-    nextPhase();
+    // 检查游戏是否结束
+    const gameOverResult = checkGameOver();
+    if (gameOverResult.isOver) {
+        // 游戏结束，更新游戏状态
+        gameState.value = 'gameOver';
+        gameOverReason.value = gameOverResult.reason;
+    } else {
+        // 游戏继续，进入下一个阶段
+        nextPhase();
+    }
 };
 
 // 处理食物查看模态窗口卡片选择
@@ -350,8 +358,16 @@ const handleFoodViewModalCardSelect = (index) => {
     // 这里可以处理卡片选择逻辑
     // 关闭模态窗口
     showFoodViewModal.value = false;
-    // 继续游戏流程
-    nextPhase();
+    // 检查游戏是否结束
+    const gameOverResult = checkGameOver();
+    if (gameOverResult.isOver) {
+        // 游戏结束，更新游戏状态
+        gameState.value = 'gameOver';
+        gameOverReason.value = gameOverResult.reason;
+    } else {
+        // 游戏继续，进入下一个阶段
+        nextPhase();
+    }
 };
 
 // 处理移形换影模态窗口关闭
